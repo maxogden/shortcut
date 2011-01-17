@@ -1,14 +1,30 @@
-require "shortcut"
+require 'rubygems'
 require 'hotcocoa'
+require "shortcut"
 
-include HotCocoa
+class Application
 
-application do |app|
-      
+  include HotCocoa
+
+  def start
+    application :name => "Shortcut" do |app|
+      app.delegate = self
+      window :frame => [100, 100, 500, 500], :title => "Shortcut" do |win|
+        win << label(:text => "Hello from HotCocoa", :layout => {:start => false})
+        win << label(:text => "Press Control+Option+Space to pop-up a window", :layout => {:start => false})
+        win.will_close { exit }
+      end
+    end
+  end
+  
+  def applicationDidFinishLaunching(sender)
+    install_shortcut
+  end
+    
   def install_shortcut
-    shortcut = Shortcut.new
-    shortcut.delegate = self
-    shortcut.addShortcut
+    @shortcut = Shortcut.new
+    @shortcut.delegate = self
+    @shortcut.addShortcut
   end
   
   def hotkeyWasPressed
@@ -16,12 +32,8 @@ application do |app|
       my_label = label(:text => "You pressed Control+Option+Space", :layout => {:expand => :width, :start => false})
       win << my_label
     end
-  end
-  
-  window :size => [200, 50] do |win|
-    b = button :title => 'Install Carbon Shortcut'
-    b.on_action { install_shortcut; puts "Installed KeyBoard shortcut, type Control+Option+Space" }
-    win << b # Sugar for adding a subview.
-    win.will_close { puts "goodbye"; exit } # Delegate method--implemented!
-  end
+  end 
+
 end
+
+Application.new.start

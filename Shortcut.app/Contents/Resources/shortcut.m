@@ -13,36 +13,45 @@
 }
 @property (assign) id delegate;
 - (void) addShortcut;
+- (void) hotkeyWasPressed;
 @end
-
 OSStatus myHotKeyHandler(EventHandlerCallRef nextHandler, EventRef anEvent, void *userData);
+
 
 @implementation Shortcut
 @synthesize delegate;
 
-- (void)addShortcut
-{
-  EventHotKeyRef myHotKeyRef;
-  EventHotKeyID myHotKeyID;
-  EventTypeSpec eventType;
-  eventType.eventClass=kEventClassKeyboard;
-  eventType.eventKind=kEventHotKeyPressed;
-  InstallApplicationEventHandler(&myHotKeyHandler,1,&eventType,(void *)delegate,NULL);
-  myHotKeyID.signature='mhk1';
-  myHotKeyID.id=1;
-  RegisterEventHotKey(49, controlKey+optionKey, myHotKeyID, GetApplicationEventTarget(), 0, &myHotKeyRef);
-}
-
-@end
-
 OSStatus myHotKeyHandler(EventHandlerCallRef nextHandler, EventRef anEvent, void *userData)
 {
-  id delegate = (id)userData;
-  NSLog(@"YEAY WE DID A GLOBAL HOTKEY");
-  if ( delegate && [delegate respondsToSelector:@selector(hotkeyWasPressed)] ) {
-      [delegate hotkeyWasPressed];
-  }
-  return noErr;
+    NSLog(@"YEAY WE DID A GLOBAL HOTKEY");
+    
+    if ( userData != NULL ) {
+        id delegate = (id)userData;
+        if ( delegate && [delegate respondsToSelector:@selector(hotkeyWasPressed)] ) {
+          [delegate hotkeyWasPressed];
+        }
+    }
+    return noErr;
 }
+
+- (void) addShortcut
+{
+    EventHotKeyRef myHotKeyRef;
+    EventHotKeyID myHotKeyID;
+    EventTypeSpec eventType;
+    eventType.eventClass=kEventClassKeyboard;
+    eventType.eventKind=kEventHotKeyPressed;
+    if ( delegate == nil )
+      delegate = self;
+    EventTargetRef eventTarget = (EventTargetRef) GetEventMonitorTarget();
+    InstallEventHandler(eventTarget, &myHotKeyHandler, 1, &eventType, (void *)delegate, NULL);
+    myHotKeyID.signature='mhk1';
+    myHotKeyID.id=1;
+    RegisterEventHotKey(49, controlKey+optionKey, myHotKeyID, eventTarget, 0, &myHotKeyRef);
+}
+
+- (void) hotkeyWasPressed {};
+
+@end
 
 void Init_shortcut(void) {}

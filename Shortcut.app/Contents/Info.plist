@@ -4,8 +4,6 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
  <string>English</string>
- <key>CFBundleIconFile</key>
- <string>Shortcut.icns</string>
 	<key>CFBundleExecutable</key>
 	<string>Shortcut</string>
 	<key>CFBundleIdentifier</key>

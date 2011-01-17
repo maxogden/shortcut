@@ -22,9 +22,7 @@ OSStatus myHotKeyHandler(EventHandlerCallRef nextHandler, EventRef anEvent, void
 @synthesize delegate;
 
 OSStatus myHotKeyHandler(EventHandlerCallRef nextHandler, EventRef anEvent, void *userData)
-{
-    NSLog(@"YEAY WE DID A GLOBAL HOTKEY");
-    
+{    
     if ( userData != NULL ) {
         id delegate = (id)userData;
         if ( delegate && [delegate respondsToSelector:@selector(hotkeyWasPressed)] ) {

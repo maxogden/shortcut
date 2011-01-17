@@ -13,7 +13,7 @@
 }
 @property (assign) id delegate;
 - (void) addShortcut;
-- (void) hotkeyWasPressed;
+- (void) hotkeyWasPressed:(NSString *)message;
 @end
 OSStatus myHotKeyHandler(EventHandlerCallRef nextHandler, EventRef anEvent, void *userData);
 
@@ -23,10 +23,16 @@ OSStatus myHotKeyHandler(EventHandlerCallRef nextHandler, EventRef anEvent, void
 
 OSStatus myHotKeyHandler(EventHandlerCallRef nextHandler, EventRef anEvent, void *userData)
 {    
+    EventHotKeyID hkCom;
+    GetEventParameter(anEvent,kEventParamDirectObject,typeEventHotKeyID,NULL,sizeof(hkCom),NULL,&hkCom);
+    int l = hkCom.id;
+    NSString* hkString = [NSString stringWithFormat:@"%d", l];
+    NSLog(@"%@", hkString);
+     
     if ( userData != NULL ) {
         id delegate = (id)userData;
-        if ( delegate && [delegate respondsToSelector:@selector(hotkeyWasPressed)] ) {
-          [delegate hotkeyWasPressed];
+        if ( delegate && [delegate respondsToSelector:@selector(hotkeyWasPressed:)] ) {
+          [delegate hotkeyWasPressed:hkString];
         }
     }
     return noErr;
@@ -35,7 +41,8 @@ OSStatus myHotKeyHandler(EventHandlerCallRef nextHandler, EventRef anEvent, void
 - (void) addShortcut
 {
     EventHotKeyRef myHotKeyRef;
-    EventHotKeyID myHotKeyID;
+    EventHotKeyID prevHotKeyID;
+    EventHotKeyID nextHotKeyID;
     EventTypeSpec eventType;
     eventType.eventClass=kEventClassKeyboard;
     eventType.eventKind=kEventHotKeyPressed;
@@ -43,12 +50,18 @@ OSStatus myHotKeyHandler(EventHandlerCallRef nextHandler, EventRef anEvent, void
       delegate = self;
     EventTargetRef eventTarget = (EventTargetRef) GetEventMonitorTarget();
     InstallEventHandler(eventTarget, &myHotKeyHandler, 1, &eventType, (void *)delegate, NULL);
-    myHotKeyID.signature='mhk1';
-    myHotKeyID.id=1;
-    RegisterEventHotKey(49, controlKey+optionKey, myHotKeyID, eventTarget, 0, &myHotKeyRef);
+    prevHotKeyID.signature='phk1';
+    prevHotKeyID.id=1;
+    nextHotKeyID.signature='nhk1';
+    nextHotKeyID.id=2;
+    RegisterEventHotKey(123, cmdKey+controlKey, prevHotKeyID, eventTarget, 0, &myHotKeyRef);
+    RegisterEventHotKey(124, cmdKey+controlKey, nextHotKeyID, eventTarget, 0, &myHotKeyRef);
 }
 
-- (void) hotkeyWasPressed {};
+- (void) hotkeyWasPressed:(NSString *)message {
+  NSLog(@"%@", message);
+  NSLog(@"%@","AHHA");
+};
 
 @end
 

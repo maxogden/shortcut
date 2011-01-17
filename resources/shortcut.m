@@ -27,7 +27,6 @@ OSStatus myHotKeyHandler(EventHandlerCallRef nextHandler, EventRef anEvent, void
     GetEventParameter(anEvent,kEventParamDirectObject,typeEventHotKeyID,NULL,sizeof(hkCom),NULL,&hkCom);
     int l = hkCom.id;
     NSString* hkString = [NSString stringWithFormat:@"%d", l];
-    NSLog(@"%@", hkString);
      
     if ( userData != NULL ) {
         id delegate = (id)userData;
@@ -59,8 +58,6 @@ OSStatus myHotKeyHandler(EventHandlerCallRef nextHandler, EventRef anEvent, void
 }
 
 - (void) hotkeyWasPressed:(NSString *)message {
-  NSLog(@"%@", message);
-  NSLog(@"%@","AHHA");
 };
 
 @end

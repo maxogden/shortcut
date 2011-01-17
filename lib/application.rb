@@ -37,8 +37,8 @@ class Application
     shortcut.addShortcut
   end
 
-  def hotkeyWasPressed  
-    puts "You pressed Control+Option+Space"
+  def hotkeyWasPressed(message)  
+    puts "You pressed #{message}"
   end
 
   def lib_path
